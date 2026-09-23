@@ -1,0 +1,9 @@
+{
+  "name": "mpg-brand-config",
+  "version": "1.0.0",
+  "description": "Per-instance branding loader shared across the platform's apps. Reads a gitignored, per-server config/brand.json and falls back to client-neutral defaults.",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "files": ["index.js", "README.md"],
+  "scripts": { "test": "node test.js" }
+}
