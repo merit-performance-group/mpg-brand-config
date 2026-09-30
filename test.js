@@ -104,4 +104,32 @@ test("asset paths resolve under the app's own public/brand, not this module's", 
     "logoPath must never resolve inside node_modules");
 });
 
+
+test("the deck type scale has a usable default, and an override replaces only what it names", ({ root, write }) => {
+  // An instance that wants a bigger Title should not have to restate Heading, Body and
+  // Caption to get it. Per-style merge, not wholesale replacement.
+  const bare = build({ appRoot: root }).decks.textStyles;
+  for (const name of ["title", "heading", "body", "caption"]) {
+    assert.ok(bare[name], name + " has a default");
+    assert.equal(typeof bare[name].size, "number");
+    assert.equal(typeof bare[name].weight, "number");
+    assert.equal(typeof bare[name].lh, "number");
+    assert.equal(typeof bare[name].tone, "string");
+  }
+
+  write({ decks: { textStyles: { title: { size: 9 } } } });
+  const tuned = build({ appRoot: root }).decks.textStyles;
+  assert.strictEqual(tuned.title.size, 9, "the override lands");
+  assert.strictEqual(tuned.title.weight, bare.title.weight, "and takes nothing else with it");
+  assert.deepStrictEqual(tuned.body, bare.body, "other styles are untouched");
+});
+
+test("a text style names a ROLE, never a colour", ({ root }) => {
+  // The whole point of the role vocabulary is that a deck restyled for another brand keeps
+  // its meaning. A hex here would be the one value that did not move.
+  const styles = build({ appRoot: root }).decks.textStyles;
+  for (const [name, def] of Object.entries(styles)) {
+    assert.ok(!/^#/.test(def.tone), name + " names a colour instead of a role: " + def.tone);
+  }
+});
 console.log(`\n${passed} passed`);

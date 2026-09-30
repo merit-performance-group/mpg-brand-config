@@ -187,6 +187,30 @@ const DEFAULTS = {
       railRule: null,
       railMuted: null,
       railActive: null
+    },
+
+    // THE DECK'S TYPE SCALE — four named styles an author applies in the editor, and the one
+    // place what each one means is decided.
+    //
+    // Sizes are cqh: one cqh is one per cent of the card's height, the same unit every other
+    // measurement on a slide uses, so a style scales with the card rather than needing a
+    // breakpoint. Weights are CSS weights. `tone` is a brand ROLE, never a colour — the whole
+    // point of the role vocabulary is that a deck restyled for another brand keeps its
+    // meaning, and a hex here would be the one value that did not move.
+    //
+    // These defaults are a real, usable scale rather than placeholders, because an instance
+    // with no textStyles configured still has to render correctly. They are also deliberately
+    // client-neutral: nothing here is any particular brand's typography.
+    //
+    // Nothing converts existing text to a style. Imported paragraphs carry their own sizes and
+    // stay Custom until an author chooses otherwise — a paragraph PowerPoint set at 23.4pt is
+    // not a Heading for being near one, and a mass conversion would rewrite decks nobody asked
+    // to have rewritten.
+    textStyles: {
+      title:   { size: 7.2, weight: 800, lh: 1.08, tone: "ink" },
+      heading: { size: 4.6, weight: 700, lh: 1.18, tone: "ink" },
+      body:    { size: 3.0, weight: 400, lh: 1.42, tone: "ink" },
+      caption: { size: 2.1, weight: 400, lh: 1.35, tone: "mutedInk" }
     }
   }
 };
@@ -288,6 +312,14 @@ function buildBrandConfig({ appRoot } = {}) {
       colors: {
         ...DEFAULTS.decks.colors,
         ...(raw.decks?.colors || {})
+      },
+      // Per style rather than wholesale, so an instance that wants a bigger Title does not
+      // have to restate Heading, Body and Caption to get it.
+      textStyles: {
+        title: { ...DEFAULTS.decks.textStyles.title, ...(raw.decks?.textStyles?.title || {}) },
+        heading: { ...DEFAULTS.decks.textStyles.heading, ...(raw.decks?.textStyles?.heading || {}) },
+        body: { ...DEFAULTS.decks.textStyles.body, ...(raw.decks?.textStyles?.body || {}) },
+        caption: { ...DEFAULTS.decks.textStyles.caption, ...(raw.decks?.textStyles?.caption || {}) }
       }
     }
   };
